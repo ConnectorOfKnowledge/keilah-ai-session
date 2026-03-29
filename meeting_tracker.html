@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keilah — AI Strategy Session</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --text: #e8e4dc;
+    --muted: #6b6b6b;
+    --action: #4ade80;
+    --dig: #60a5fa;
+    --revisit: #fbbf24;
+    --skip: #525252;
+    --action-bg: rgba(74,222,128,0.08);
+    --dig-bg: rgba(96,165,250,0.08);
+    --revisit-bg: rgba(251,191,36,0.08);
+    --skip-bg: rgba(82,82,82,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 28px 0 40px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+
+  .card.status-action  { border-color: var(--action);  background: var(--action-bg); }
+  .card.status-dig     { border-color: var(--dig);     background: var(--dig-bg); }
+  .card.status-revisit { border-color: var(--revisit); background: var(--revisit-bg); }
+  .card.status-skip    { border-color: var(--skip);    background: var(--skip-bg); opacity: 0.55; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.25;
+    flex: 1;
+  }
+
+  .star {
+    color: var(--revisit);
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .card-desc {
+    font-size: 13.5px;
+    color: #a0a0a0;
+    font-weight: 300;
+    margin-bottom: 18px;
+    line-height: 1.55;
+  }
+
+  .status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface2);
+    color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+
+  .btn:hover { filter: brightness(1.3); color: var(--text); }
+
+  .btn.active-action  { background: var(--action);  color: #000; }
+  .btn.active-dig     { background: var(--dig);     color: #000; }
+  .btn.active-revisit { background: var(--revisit); color: #000; }
+  .btn.active-skip    { background: var(--skip);    color: var(--text); }
+
+  .btn-undo {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 5px 10px;
+    margin-left: 4px;
+  }
+
+  .btn-undo:hover { color: var(--text); border-color: #555; }
+
+  /* Summary */
+  .summary {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+
+  .summary h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+
+  .summary-group { margin-bottom: 24px; }
+
+  .summary-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .summary-group-label .dot { width: 8px; height: 8px; }
+
+  .summary-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: #c0bdb5;
+  }
+
+  .summary-item:last-child { border-bottom: none; }
+
+  .empty-state {
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .clear-btn {
+    margin-top: 32px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .clear-btn:hover { color: var(--text); border-color: #555; }
+
+  .saved-indicator {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--action);
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .saved-indicator.show { opacity: 1; }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 28px; }
+    .card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="label">AI Strategy Session</div>
+    <h1>Keilah</h1>
+    <div class="subtitle" id="date-display"></div>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:var(--action)"></div> Action Item — doing this</div>
+    <div class="legend-item"><div class="dot" style="background:var(--dig)"></div> Dig Deeper — explore today</div>
+    <div class="legend-item"><div class="dot" style="background:var(--revisit)"></div> Revisit Later — future session</div>
+    <div class="legend-item"><div class="dot" style="background:var(--skip)"></div> Not Relevant — skip for now</div>
+  </div>
+
+  <div id="cards-container"></div>
+
+  <div class="summary" id="summary">
+    <h2>Session Summary</h2>
+    <div id="summary-content"></div>
+    <button class="clear-btn" onclick="clearAll()">Reset all selections</button>
+  </div>
+
+</div>
+
+<div class="saved-indicator" id="saved-indicator">✓ Saved</div>
+
+<script>
+const STORAGE_KEY = 'keilah_session_v1';
+
+const topics = [
+  {
+    id: 'slide-deck',
+    section: 'Core Topics',
+    title: 'Weekly Staff Update Slide Deck',
+    star: true,
+    desc: 'Her idea and the anchor for today. Currently she\'s prompting ChatGPT one slide at a time and pasting into Google Slides. Goal: a workflow where she jots notes throughout the week → one click → full slide deck sent to all offices.'
+  },
+  {
+    id: 'claude-desktop',
+    section: 'Core Topics',
+    title: 'Claude for Desktop — First Look',
+    desc: 'Walk through the basics together. What can it do for her daily tasks? Setting up a simple system prompt tailored to her role as office manager / dispenser could save her time every single day.'
+  },
+  {
+    id: 'notebooklm',
+    section: 'Core Topics',
+    title: 'NotebookLM as a Weekly Brain Dump',
+    desc: 'She adds notes, updates, and reminders throughout the week. NotebookLM organizes it and can generate a slide deck summary on demand. Free and low-friction — worth a live demo today.'
+  },
+  {
+    id: 'gamma',
+    section: 'Core Topics',
+    title: 'Gamma.app — Auto-Generated Slide Decks',
+    desc: 'Paste a rough summary → Gamma generates a designed, shareable slide deck in seconds. Lowest learning curve of any slide option. Free tier available. Could be the fastest win today.'
+  },
+  {
+    id: 'comms-hub',
+    section: 'Core Topics',
+    title: 'Cross-Office Communication Hub',
+    desc: 'She\'s currently the human relay between 3–5 offices with staff who never meet. Beyond the slide deck — is there a better system? A shared living doc, a simple team update page, or even a group channel she controls.'
+  },
+  {
+    id: 'prompt-library',
+    section: 'Core Topics',
+    title: 'Personal Prompt Library',
+    desc: 'Build a small library of reusable prompts for her most common tasks — drafting updates, writing emails, summarizing notes. She copies, tweaks, sends. No starting from scratch every time.'
+  },
+  {
+    id: 'voice-to-update',
+    section: 'Core Topics',
+    title: 'Voice Memo → Written Update',
+    desc: 'She travels between offices. A quick voice memo in the car → auto-transcribed → formatted as a staff update. Could feed directly into the slide deck workflow. Tools: Otter.ai, iPhone transcription, or Claude for Desktop.'
+  },
+  {
+    id: 'daily-writing',
+    section: 'Core Topics',
+    title: 'Daily Writing & Drafting Tasks',
+    desc: 'What does she write or type repeatedly? Emails, internal messages, memos, follow-ups? Identifying the top 3 repetitive writing tasks could unlock the most immediate daily time savings.'
+  },
+  {
+    id: 'discovery-week',
+    section: 'Discussion Starters',
+    title: 'Walk Me Through a Typical Week',
+    desc: 'Fallback discovery question. Ask her to walk through Monday to Friday on screen. Watch for anything repeated, manual, or slow. The bottlenecks usually show themselves pretty fast.'
+  },
+  {
+    id: 'discovery-annoying',
+    section: 'Discussion Starters',
+    title: 'What\'s the Most Annoying Recurring Task?',
+    desc: 'Classic time-audit opener. "If you could wave a wand and one task just disappeared — what would it be?" The answer usually points directly to the highest-value AI opportunity.'
+  },
+  {
+    id: 'future-vision',
+    section: 'Future Seeds',
+    title: 'Future Vision — Where This Could Go',
+    desc: 'Plant the seed: what she\'s building for herself could eventually extend to the whole practice. Patient communication, onboarding new staff, reporting to the owner. No pressure now — just worth mentioning so it\'s on her radar.'
+  }
+];
+
+let statuses = {};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) statuses = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(statuses));
+    showSaved();
+  } catch(e) {}
+}
+
+function showSaved() {
+  const el = document.getElementById('saved-indicator');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+function setStatus(id, status) {
+  if (statuses[id] === status) {
+    delete statuses[id];
+  } else {
+    statuses[id] = status;
+  }
+  saveState();
+  render();
+}
+
+function clearAll() {
+  if (confirm('Reset all selections?')) {
+    statuses = {};
+    saveState();
+    render();
+  }
+}
+
+const statusConfig = [
+  { key: 'action',  label: '✓ Action Item',    activeClass: 'active-action',  cardClass: 'status-action' },
+  { key: 'dig',     label: '↓ Dig Deeper',      activeClass: 'active-dig',     cardClass: 'status-dig' },
+  { key: 'revisit', label: '→ Revisit Later',   activeClass: 'active-revisit', cardClass: 'status-revisit' },
+  { key: 'skip',    label: '✕ Not Relevant',    activeClass: 'active-skip',    cardClass: 'status-skip' }
+];
+
+function render() {
+  const container = document.getElementById('cards-container');
+  let currentSection = '';
+  let html = '';
+
+  topics.forEach(topic => {
+    if (topic.section !== currentSection) {
+      currentSection = topic.section;
+      html += `<div class="section-label">${currentSection}</div>`;
+    }
+
+    const currentStatus = statuses[topic.id];
+    const cardClass = currentStatus ? statusConfig.find(s => s.key === currentStatus)?.cardClass : '';
+
+    let buttonsHtml = statusConfig.map(s => {
+      const isActive = currentStatus === s.key;
+      return `<button class="btn ${isActive ? s.activeClass : ''}" onclick="setStatus('${topic.id}', '${s.key}')">${s.label}</button>`;
+    }).join('');
+
+    if (currentStatus) {
+      buttonsHtml += `<button class="btn btn-undo" onclick="setStatus('${topic.id}', '${currentStatus}')">Undo</button>`;
+    }
+
+    html += `
+      <div class="card ${cardClass}" id="card-${topic.id}">
+        <div class="card-top">
+          <div class="card-title">${topic.title}</div>
+          ${topic.star ? '<div class="star">★ HER IDEA</div>' : ''}
+        </div>
+        <div class="card-desc">${topic.desc}</div>
+        <div class="status-buttons">${buttonsHtml}</div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+  renderSummary();
+}
+
+function renderSummary() {
+  const groups = {
+    action:  { label: 'Action Items',     color: 'var(--action)',  items: [] },
+    dig:     { label: 'Dig Deeper Today', color: 'var(--dig)',     items: [] },
+    revisit: { label: 'Revisit Later',    color: 'var(--revisit)', items: [] },
+    skip:    { label: 'Not Relevant',     color: 'var(--skip)',    items: [] }
+  };
+
+  topics.forEach(t => {
+    const s = statuses[t.id];
+    if (s && groups[s]) groups[s].items.push(t.title);
+  });
+
+  let html = '';
+  Object.entries(groups).forEach(([key, group]) => {
+    if (group.items.length === 0) return;
+    html += `
+      <div class="summary-group">
+        <div class="summary-group-label">
+          <div class="dot" style="background:${group.color}"></div>
+          ${group.label}
+        </div>
+        ${group.items.map(i => `<div class="summary-item">${i}</div>`).join('')}
+      </div>
+    `;
+  });
+
+  if (!html) {
+    html = '<p class="empty-state">No items tagged yet — work through the cards above during your session.</p>';
+  }
+
+  document.getElementById('summary-content').innerHTML = html;
+}
+
+// Init
+loadState();
+render();
+
+document.getElementById('date-display').textContent =
+  new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+</script>
+</body>
+</html>

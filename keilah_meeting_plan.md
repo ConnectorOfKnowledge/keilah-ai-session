@@ -1,0 +1,67 @@
+# Keilah — AI Strategy Session
+**Meeting Type:** Introductory / Discovery  
+**Format:** Remote screen share (you remoting in)  
+**Duration:** ~1 hour  
+**Goal:** Identify her real friction points, anchor on the slide deck workflow, plant seeds for broader AI use
+
+---
+
+## Your Framing Mindset Going In
+
+This is a discovery call disguised as a help session. You already know one thing she wants (the slide deck), but the real gold is what you'll find once you're looking at her screen and watching how she actually works. Let her talk. Ask "what happens next?" a lot. The slide deck is the door — use it to walk into everything else.
+
+---
+
+## Suggested Flow
+
+### 1. Open (5 min) — Set the tone
+- "I'm not here to sell you anything or change how you work overnight. I just want to understand what your day actually looks like and see if there's anything we can make easier."
+- Ask her to pull up whatever she has open on a normal day — email, notes, whatever. Just start there.
+
+### 2. The Slide Deck Deep Dive (15 min) — Her idea, your anchor
+- Let her explain the problem in her own words
+- Current process: ChatGPT → one slide at a time → paste into Google Slides
+- Pain: she's the information relay between 3–5 offices, staff who never meet
+- Explore solutions together (see Topic Cards below)
+
+### 3. What Does a Tuesday Look Like? (15 min) — Discovery
+- Walk through a real day or week with her on screen
+- Watch for: repeated typing, manual copy-paste, anything she does more than once
+- Ask: "What's the most annoying thing you do more than once a week?"
+
+### 4. Claude for Desktop — First Look (10 min)
+- If she's installed it: quick orientation, show her 2–3 things she can do right now
+- If not: walk her through install, set up a basic system prompt for her role
+
+### 5. Prioritize Together (10 min) — Use the tracker
+- Pull up the HTML tracker
+- Go through each topic card together
+- Let her pick what she actually cares about vs. what can wait
+
+### 6. Close (5 min)
+- What's the ONE thing we're doing before we talk again?
+- Does she want to set a next session?
+
+---
+
+## Fallback Discussion Starters
+*(Use these if the conversation stalls or she's not sure where to start)*
+
+- "Walk me through your Monday morning. What's the first thing you do when you sit down?"
+- "Is there anything you do every week that you just dread because it takes forever?"
+- "If you could wave a magic wand and one task just... disappeared... what would it be?"
+- "When you travel between offices, what do you have to repeat or re-explain every time?"
+- "What does the owner ask you for the most that takes you time to put together?"
+
+---
+
+## Tool Options for the Slide Deck (have these ready to show her)
+
+| Option | How It Works | Cost | Effort to Learn |
+|---|---|---|---|
+| **NotebookLM** | Dump notes in throughout the week → click to generate slides | Free (limited) | Low |
+| **Claude for Desktop** | Paste her weekly notes → custom prompt → formatted slide outline | Free–$20/mo | Low-Medium |
+| **Google Slides + Claude** | Claude writes the content, she pastes into Slides | Free | Low |
+| **Gamma.app** | Paste notes → full designed slide deck auto-generated | Free–$15/mo | Very Low |
+
+**Recommendation to mention:** Start with Gamma.app or NotebookLM — lowest friction, visual results she can see immediately, no technical setup.
