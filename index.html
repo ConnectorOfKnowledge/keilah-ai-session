@@ -67,8 +67,11 @@
   .summary-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;color:#c0bdb5}
   .summary-item:last-child{border-bottom:none}
   .empty-state{color:var(--muted);font-size:13px;font-style:italic}
-  .clear-btn{margin-top:32px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all 0.15s}
-  .clear-btn:hover{color:var(--text);border-color:#555}
+  .summary-actions{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+  .clear-btn,.email-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all 0.15s}
+  .clear-btn:hover,.email-btn:hover{color:var(--text);border-color:#555}
+  .email-btn{border-color:var(--action);color:var(--action)}
+  .email-btn:hover{background:var(--action);color:#000}
   .saved-indicator{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);color:var(--action);font-size:12px;padding:8px 14px;border-radius:8px;opacity:0;transition:opacity 0.3s;pointer-events:none}
   .saved-indicator.show{opacity:1}
   @media(max-width:600px){h1{font-size:28px}.card-header{padding:18px}.card-body-inner{padding:0 18px 18px}.status-buttons{padding:0 18px 16px}}
@@ -91,7 +94,11 @@
   <div class="summary" id="summary">
     <h2>Session Summary</h2>
     <div id="summary-content"></div>
-    <button class="clear-btn" onclick="clearAll()">Reset all selections</button>
+    <div class="summary-actions">
+      <button class="email-btn" onclick="emailSummary()">Email Summary</button>
+      <button class="email-btn" onclick="copySummary()" id="copy-btn">Copy Summary to Clipboard</button>
+      <button class="clear-btn" onclick="clearAll()">Reset all selections</button>
+    </div>
   </div>
 </div>
 <div class="saved-indicator" id="saved-indicator">Saved</div>
@@ -130,6 +137,70 @@ if(!html){html='<p class="empty-state">No items tagged yet. Work through the car
 document.getElementById('summary-content').innerHTML=html}
 loadState();render();
 document.getElementById('date-display').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+function buildSummaryText(){
+var dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+var labels={action:'ACTION ITEMS -- We are doing these',dig:'DIG DEEPER -- Exploring further today',revisit:'REVISIT LATER -- For a future session',skip:'NOT RELEVANT -- Skipping for now'};
+var grouped={action:[],dig:[],revisit:[],skip:[]};
+topics.forEach(function(t){var s=statuses[t.id];if(s&&grouped[s])grouped[s].push(t)});
+var hasAny=Object.values(grouped).some(function(arr){return arr.length>0});
+if(!hasAny)return null;
+var lines=[];
+lines.push('AI STRATEGY SESSION -- Keilah');
+lines.push(dateStr);
+lines.push('');
+lines.push('=========================================');
+['action','dig','revisit','skip'].forEach(function(key){
+var items=grouped[key];
+if(items.length===0)return;
+lines.push('');
+lines.push(labels[key]);
+lines.push('-----------------------------------------');
+items.forEach(function(t){
+lines.push('');
+lines.push('  '+t.title+(t.star?' (YOUR IDEA)':''));
+lines.push('  '+t.summary);
+});
+lines.push('');
+});
+var untagged=topics.filter(function(t){return!statuses[t.id]});
+if(untagged.length>0){
+lines.push('NOT YET DISCUSSED');
+lines.push('-----------------------------------------');
+untagged.forEach(function(t){lines.push('  '+t.title)});
+lines.push('');
+}
+lines.push('=========================================');
+lines.push('View the full interactive session:');
+lines.push('https://connectorofknowledge.github.io/keilah-ai-session/');
+return lines.join('\n');
+}
+
+function emailSummary(){
+var body=buildSummaryText();
+if(!body){alert('No items tagged yet. Tag some topics first.');return}
+var subject='AI Strategy Session Summary -- '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+
+function copySummary(){
+var body=buildSummaryText();
+if(!body){alert('No items tagged yet. Tag some topics first.');return}
+navigator.clipboard.writeText(body).then(function(){
+var btn=document.getElementById('copy-btn');
+btn.textContent='Copied!';
+btn.style.background='var(--action)';
+btn.style.color='#000';
+setTimeout(function(){btn.textContent='Copy Summary to Clipboard';btn.style.background='';btn.style.color=''},2000);
+}).catch(function(){
+var ta=document.createElement('textarea');
+ta.value=body;ta.style.position='fixed';ta.style.opacity='0';
+document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+var btn=document.getElementById('copy-btn');
+btn.textContent='Copied!';
+setTimeout(function(){btn.textContent='Copy Summary to Clipboard'},2000);
+});
+}
 </script>
 </body>
 </html>
